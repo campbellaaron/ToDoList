@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">ToDoList</string>
     <string name="save_task">Save Task</string>
+    <string name="category_prompt">Category</string>
+    <string name="title">Task title</string>
+    <string name="text">Add your text here</string>
+    <string name="dateModified">Modified Date</string>
+    <string name="pick_date">Due Date</string>
+    <string-array name="category_list">
+        <item>Personal</item>
+        <item>Work</item>
+        <item>Shopping</item>
+        <item>Projects</item>
+    </string-array>
 </resources>

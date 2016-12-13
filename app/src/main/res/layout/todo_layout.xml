@@ -1,15 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.doomedforfailure.todolist.MainActivity"
+    android:background="#cccccccc">
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:layout_weight="6"
-        android:id="@+id/message"
-        android:hint="Add Note Title"
-        android:textSize="28sp"
-        android:gravity="top"/>
+        android:id="@+id/task_title"
+        android:background="#ffffffff"
+        android:layout_height="40dp"
+        android:inputType="text"
+        android:hint="@string/title"
+        android:layout_alignParentStart="true" />
 
-</LinearLayout>
+
+    <Button
+        android:text="@string/pick_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/datePickerBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:onClick="showDatePickerDialog"
+        android:background="@android:color/holo_orange_light" />
+
+    <EditText
+        android:id="@+id/task_text"
+        android:background="#ffffffff"
+        android:inputType="text"
+        android:gravity="top"
+        android:hint="@string/text"
+        android:layout_marginBottom="25dp"
+        android:layout_above="@+id/datePickerBtn"
+        android:layout_alignParentStart="true"
+        android:layout_height="270dp"
+        android:layout_width="match_parent" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/save_button"
+        android:background="@android:color/holo_blue_light"
+        android:elevation="3dp"
+        android:text="Save"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:text="Time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timePickerBtn"
+        android:background="@android:color/holo_purple"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="showTimePickerDialog" />
+
+    <ImageButton
+        android:layout_height="wrap_content"
+        android:id="@+id/image_btn"
+        android:elevation="4dp"
+        android:cropToPadding="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:layout_width="wrap_content"
+        android:onClick="onImgBtnClicked"
+        android:layout_below="@+id/task_title"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:text="time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/post_time"
+        android:layout_alignTop="@+id/image_btn"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pick_date"
+        android:layout_alignTop="@+id/image_btn"
+        android:layout_centerHorizontal="true" />
+
+    <Spinner
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/task_text"
+        android:layout_alignParentStart="true"
+        android:id="@+id/select_category"
+        android:background="@android:color/background_light" />
+
+</RelativeLayout>
