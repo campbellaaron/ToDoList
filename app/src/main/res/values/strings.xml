@@ -6,10 +6,5 @@
     <string name="text">Add your text here</string>
     <string name="dateModified">Modified Date</string>
     <string name="pick_date">Due Date</string>
-    <string-array name="category_list">
-        <item>Personal</item>
-        <item>Work</item>
-        <item>Shopping</item>
-        <item>Projects</item>
-    </string-array>
+
 </resources>

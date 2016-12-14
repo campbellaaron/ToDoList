@@ -1,8 +1,116 @@
 package com.doomedforfailure.todolist;
 
+import android.app.DatePickerDialog;
+import android.app.DialogFragment;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
+import butterknife.OnClick;
+
 /**
  * Created by aaroncampbell on 12/13/16.
  */
 
-public class AddEditTask {
+public class AddEditTask extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private EditText editTitle;
+    private EditText editTask;
+    private Button saveBtn;
+    private Button imgBtn;
+    private TextView dueTime;
+    private TextView dueDate;
+    protected Spinner spinner;
+    private int index;
+    private DatePickerDialog datePicker;
+    private Calendar calendar;
+    private SimpleDateFormat dateFormatter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.todo_layout);
+
+        saveBtn = (Button) findViewById(R.id.save_button);
+        imgBtn = (Button) findViewById(R.id.image_btn);
+        editTitle = (EditText) findViewById(R.id.task_title);
+        editTask = (EditText) findViewById(R.id.task_text);
+        spinner = (Spinner) findViewById(R.id.select_category);
+        dueDate = (TextView) findViewById(R.id.pick_date);
+        dueTime = (TextView) findViewById(R.id.post_time);
+
+        //Spinner element
+        spinner.setOnItemSelectedListener(this);
+
+        List<String> categories = new ArrayList<>();
+        categories.add("Personal");
+        categories.add("Work");
+        categories.add("Shopping");
+        categories.add("Projects");
+        categories.add("Travel");
+
+        //Create adapter for Spinner object
+        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+
+        //Drop down layout-style
+        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(catAdapter);
+
+        calendar = Calendar.getInstance();
+        dateFormatter = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+
+        dueDate.setText(dateFormatter.format(calendar.getTime()));
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+        // On selecting a spinner item
+        String item = adapterView.getItemAtPosition(position).toString();
+
+        // Showing selected spinner item
+        Toast.makeText(adapterView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> arg0) {
+
+    }
+
+    @OnClick(R.id.datePickerBtn)
+    public void showDatePicker() {
+        DialogFragment newFragment = new DatePickerFragment();
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    @OnClick(R.id.timePickerBtn)
+    public void showTimePicker() {
+
+    }
+
+    @OnClick(R.id.save_button)
+    public void saveClicked() {
+        Intent intent = getIntent();
+        intent.putExtra("Title", editTitle.getText().toString());
+        intent.putExtra("Text", editTask.getText().toString());
+        intent.putExtra("Time", dueTime.getText().toString());
+        intent.putExtra("DueDate", dueDate.getText().toString());
+        intent.putExtra("Index", index);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
 }
