@@ -1,5 +1,7 @@
 package com.doomedforfailure.todolist;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 /**
@@ -7,16 +9,24 @@ import java.util.Date;
  */
 
 public class Task implements Comparable<Task> {
+    @SerializedName("title")
     private String title;
+    @SerializedName("text")
     private String taskText;
+    @SerializedName("date")
     private Date dateModified;
+    @SerializedName("dueDate")
     private String formattedDate;
+    @SerializedName("category")
     private String category;
+    @SerializedName("dueTime")
     private String dueTime;
+    @SerializedName("imgSrc")
     private String imgSrc;
+    @SerializedName("key")
     private String key;
 
-    public Task(String title, String taskText, Date dateModified, String formattedDate, String category, String dueTime, String imgSrc, String key) {
+    public Task(String title, String taskText, String formattedDate, String category, String dueTime) {
         this.title = title;
         this.taskText = taskText;
         this.dateModified = dateModified;

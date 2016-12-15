@@ -1,10 +1,10 @@
 package com.doomedforfailure.todolist;
 
-import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,22 +20,22 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.OnClick;
-
 /**
  * Created by aaroncampbell on 12/13/16.
  */
 
 public class AddEditTask extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private static final String TAG = "ToDoList";
     private EditText editTitle;
     private EditText editTask;
     private Button saveBtn;
     private Button imgBtn;
     private TextView dueTime;
     private TextView dueDate;
+    private TextView categoryText;
     protected Spinner spinner;
     private int index;
-    private DatePickerDialog datePicker;
+    private int item;
     private Calendar calendar;
     private SimpleDateFormat dateFormatter;
 
@@ -49,6 +49,7 @@ public class AddEditTask extends AppCompatActivity implements AdapterView.OnItem
         editTitle = (EditText) findViewById(R.id.task_title);
         editTask = (EditText) findViewById(R.id.task_text);
         spinner = (Spinner) findViewById(R.id.select_category);
+        categoryText = (TextView) findViewById(R.id.category_text);
         dueDate = (TextView) findViewById(R.id.pick_date);
         dueTime = (TextView) findViewById(R.id.post_time);
 
@@ -74,12 +75,16 @@ public class AddEditTask extends AppCompatActivity implements AdapterView.OnItem
 
         dueDate.setText(dateFormatter.format(calendar.getTime()));
 
+        final Intent intent = getIntent();
+
+        index = intent.getIntExtra("Index", -1);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
         // On selecting a spinner item
-        String item = adapterView.getItemAtPosition(position).toString();
+        item = spinner.getSelectedItemPosition() + 1;
+        Log.d(TAG, "The item selected is " + item);
 
         // Showing selected spinner item
         Toast.makeText(adapterView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
@@ -90,26 +95,30 @@ public class AddEditTask extends AppCompatActivity implements AdapterView.OnItem
 
     }
 
-    @OnClick(R.id.datePickerBtn)
-    public void showDatePicker() {
+    public void showDatePicker(View v) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
-    @OnClick(R.id.timePickerBtn)
-    public void showTimePicker() {
-
+    public void showTimePicker(View v) {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getFragmentManager(), "timePicker");
     }
 
-    @OnClick(R.id.save_button)
-    public void saveClicked() {
+    public void saveClicked(View v) {
         Intent intent = getIntent();
+        int position = 0;
+//        String category = "Category: " + spinner.getItemAtPosition(position);
+
         intent.putExtra("Title", editTitle.getText().toString());
         intent.putExtra("Text", editTask.getText().toString());
         intent.putExtra("Time", dueTime.getText().toString());
         intent.putExtra("DueDate", dueDate.getText().toString());
+//        intent.putExtra("Category", category.toString());
+
         intent.putExtra("Index", index);
         setResult(RESULT_OK, intent);
+        Log.d(TAG, "Added a Task");
         finish();
     }
 
