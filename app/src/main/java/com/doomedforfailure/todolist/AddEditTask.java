@@ -24,7 +24,7 @@ import java.util.Locale;
  * Created by aaroncampbell on 12/13/16.
  */
 
-public class AddEditTask extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class AddEditTask extends AppCompatActivity {
     private static final String TAG = "ToDoList";
     private EditText editTitle;
     private EditText editTask;
@@ -53,10 +53,7 @@ public class AddEditTask extends AppCompatActivity implements AdapterView.OnItem
         dueDate = (TextView) findViewById(R.id.pick_date);
         dueTime = (TextView) findViewById(R.id.post_time);
 
-        //Spinner element
-        spinner.setOnItemSelectedListener(this);
-
-        List<String> categories = new ArrayList<>();
+        final List<String> categories = new ArrayList<>();
         categories.add("Personal");
         categories.add("Work");
         categories.add("Shopping");
@@ -70,6 +67,23 @@ public class AddEditTask extends AppCompatActivity implements AdapterView.OnItem
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(catAdapter);
 
+        //Spinner element
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                // On selecting a spinner item
+                item = spinner.getSelectedItemPosition() + 1;
+
+                // Showing selected spinner item
+                Toast.makeText(adapterView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         calendar = Calendar.getInstance();
         dateFormatter = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
 
@@ -78,21 +92,6 @@ public class AddEditTask extends AppCompatActivity implements AdapterView.OnItem
         final Intent intent = getIntent();
 
         index = intent.getIntExtra("Index", -1);
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-        // On selecting a spinner item
-        item = spinner.getSelectedItemPosition() + 1;
-        Log.d(TAG, "The item selected is " + item);
-
-        // Showing selected spinner item
-        Toast.makeText(adapterView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> arg0) {
-
     }
 
     public void showDatePicker(View v) {
@@ -107,14 +106,11 @@ public class AddEditTask extends AppCompatActivity implements AdapterView.OnItem
 
     public void saveClicked(View v) {
         Intent intent = getIntent();
-        int position = 0;
-//        String category = "Category: " + spinner.getItemAtPosition(position);
-
         intent.putExtra("Title", editTitle.getText().toString());
         intent.putExtra("Text", editTask.getText().toString());
         intent.putExtra("Time", dueTime.getText().toString());
         intent.putExtra("DueDate", dueDate.getText().toString());
-//        intent.putExtra("Category", category.toString());
+        intent.putExtra("Category", spinner.getSelectedItemPosition());
 
         intent.putExtra("Index", index);
         setResult(RESULT_OK, intent);
