@@ -35,7 +35,7 @@ public class AddEditTask extends AppCompatActivity {
     private TextView categoryText;
     protected Spinner spinner;
     private int index;
-    private int item;
+    private String item;
     private Calendar calendar;
     private SimpleDateFormat dateFormatter;
 
@@ -72,7 +72,7 @@ public class AddEditTask extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 // On selecting a spinner item
-                item = spinner.getSelectedItemPosition() + 1;
+                item = spinner.getItemAtPosition(i).toString();
 
                 // Showing selected spinner item
                 Toast.makeText(adapterView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
@@ -110,7 +110,7 @@ public class AddEditTask extends AppCompatActivity {
         intent.putExtra("Text", editTask.getText().toString());
         intent.putExtra("Time", dueTime.getText().toString());
         intent.putExtra("DueDate", dueDate.getText().toString());
-        intent.putExtra("Category", spinner.getSelectedItemPosition());
+        intent.putExtra("Category", item.toString());
 
         intent.putExtra("Index", index);
         setResult(RESULT_OK, intent);

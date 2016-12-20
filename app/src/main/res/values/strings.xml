@@ -2,7 +2,7 @@
     <string name="app_name">ToDoList</string>
     <string name="save_task">Save Task</string>
     <string name="category_prompt">Category</string>
-    <string name="title">Task title (8 chars max)</string>
+    <string name="title">Task title (12 chars max)</string>
     <string name="text">Add your text here</string>
     <string name="dateModified">Modified Date</string>
     <string name="pick_date">Due Date</string>

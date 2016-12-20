@@ -15,12 +15,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,12 +28,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Menu menu;
     private TaskArrayAdapter toDoArrayAdapter;
-    private ArrayList<Task> taskArrayList = new ArrayList<>();
+    private ArrayList<Task> taskArrayList = new ArrayList<Task>();
+    List <Task> tasks = new ArrayList<>();
     private SharedPreferences notesPrefs;
     private ListView taskListView;
     private Gson gson = new Gson();
-    private static int RESULT_LOAD_IMG = 1;
-    String encodedImage;
+    String filename = "TaskList";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,20 +81,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Task task = taskArrayList.get(position);
                         deleteFile("##" + task.getTitle());
-                        taskArrayList.remove(position);
+                        taskArrayList.remove(task);
                         toDoArrayAdapter.updateAdapter(taskArrayList);
-                        FileOutputStream outputStream = null;
-                        try {
-                            outputStream = openFileOutput(task.getKey(), Context.MODE_PRIVATE);
-                            outputStream.write(gson.toJson(task).getBytes());
-                            outputStream.flush();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        } finally {
-                            try {
-                                outputStream.close();
-                            } catch (Exception ignored) {}
-                        }
+                        toDoArrayAdapter.notifyDataSetChanged();
                     }
 
                 });
@@ -120,19 +108,6 @@ public class MainActivity extends AppCompatActivity {
                 taskArrayList.set(index, task);
             }
 
-            FileOutputStream outputStream = null;
-            try {
-                outputStream = openFileOutput(task.getTitle(), Context.MODE_PRIVATE);
-                outputStream.write(gson.toJson(task).getBytes());
-                outputStream.flush();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    outputStream.close();
-                } catch (Exception ignored) {}
-            }
-
             Collections.sort(taskArrayList);
             toDoArrayAdapter.updateAdapter(taskArrayList);
 
@@ -141,50 +116,81 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupNotes() {
         Log.d(TAG, "Made it to setup");
+        taskArrayList = new ArrayList<>();
         if (notesPrefs.getBoolean("firstRun", true)) {
             SharedPreferences.Editor editor = notesPrefs.edit();
+            editor.putBoolean("firstRun", false);
             editor.apply();
 
-            Task task1 = new Task("Note 1", "This is a note", "Due Date", "Category", "Time");
+            Task task1 = new Task("Title", "Text", DatePickerFragment.formattedDate, "Category", "Time");
             taskArrayList.add(task1);
-            Log.d(TAG, "Just posted first task");
 
-            for (Task task : taskArrayList) {
-                FileOutputStream outputStream = null;
+            for (Task task : tasks) {
+                writeNotes(task);
+            }
+        }
+         else {
+            File filesDir = this.getFilesDir();
+            File taskFile = new File(filesDir + File.separator + filename);
+            if (taskFile.exists()) {
+                readNotes(taskFile);
+
+            }
+        }
+    }
+
+    private void readNotes(File taskFile) {
+        File[] filesDir = this.getFilesDir().listFiles();
+        for (File file : filesDir) {
+            FileInputStream inputStream = null;
+            String title = file.getName();
+            if (!title.startsWith("##")) {
+                continue;
+            }
+            else {
+                title = title.substring(2,title.length());
+            }
+            String text = "";
+            try {
+                inputStream = openFileInput(taskFile.getName());
+                byte[] input = new byte[inputStream.available()];
+                while (inputStream.read(input) != -1) {
+                }
+                text = new String(input);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
+                Task[] taskItem = gson.fromJson(text, Task[].class);
+
                 try {
-                    outputStream = openFileOutput(task.getTitle(), Context.MODE_PRIVATE);
-                    outputStream.write(gson.toJson(task).getBytes());
-                    outputStream.flush();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        outputStream.close();
-                    } catch (Exception ignored) {}
+                    inputStream.close();
+                } catch (IOException ie) {
+                    ie.printStackTrace();
+                }
+                catch (NullPointerException ie) {
+                    ie.printStackTrace();
                 }
             }
-        } else {
-            File[] filesDir = this.getFilesDir().listFiles();
-            for (File file : filesDir) {
-                FileInputStream inputStream = null;
-                String title = file.getName();
-                String text = "";
-                try {
-                    inputStream = openFileInput(title);
-                    byte[] input = new byte[inputStream.available()];
-                    while (inputStream.read(input) != -1) {}
-                    text += new String(input);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    Type collectionType = new TypeToken<List<Task>>(){}.getType();
-                    List<Task> catList = gson.fromJson(text, collectionType);
-                    taskArrayList = new ArrayList<>(catList);
-                    try {
-                        inputStream.close();
-                    } catch (Exception ignored) {}
-                }
-            }
+        }
+    }
+
+    private void writeNotes(Task task) {
+        FileOutputStream outputStream = null;
+        filename = "##" + task.getTitle();
+        try {
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            String json = gson.toJson(taskArrayList);
+            byte[] bytes = json.getBytes();
+            outputStream.write(bytes);
+            outputStream.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                outputStream.close();
+            } catch (Exception ignored) {}
         }
     }
 
@@ -203,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, AddEditTask.class);
                 intent.putExtra("Title", "");
                 intent.putExtra("Text", "");
+                intent.putExtra("Category", "");
                 startActivityForResult(intent, 1);
                 return true;
             default:

@@ -103,6 +103,6 @@ public class Task implements Comparable<Task> {
 
     @Override
     public int compareTo(Task another) {
-        return another.getFormattedDate().compareTo(getFormattedDate());
+        return getFormattedDate().compareTo(another.getFormattedDate());
     }
 }
