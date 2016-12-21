@@ -6,5 +6,6 @@
     <string name="text">Add your text here</string>
     <string name="dateModified">Modified Date</string>
     <string name="pick_date">Due Date</string>
+    <string name="image_error">Error retrieving image</string>
 
 </resources>

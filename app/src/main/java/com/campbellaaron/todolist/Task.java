@@ -1,4 +1,4 @@
-package com.doomedforfailure.todolist;
+package com.campbellaaron.todolist;
 
 import com.google.gson.annotations.SerializedName;
 

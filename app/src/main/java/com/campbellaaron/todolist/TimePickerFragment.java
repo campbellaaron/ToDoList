@@ -1,4 +1,4 @@
-package com.doomedforfailure.todolist;
+package com.campbellaaron.todolist;
 
 import android.app.Dialog;
 import android.app.DialogFragment;

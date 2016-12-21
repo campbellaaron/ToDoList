@@ -1,4 +1,4 @@
-package com.doomedforfailure.todolist.db;
+package com.campbellaaron.todolist.db;
 
 import android.provider.BaseColumns;
 

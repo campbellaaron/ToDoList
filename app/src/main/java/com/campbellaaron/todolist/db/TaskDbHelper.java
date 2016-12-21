@@ -1,4 +1,4 @@
-package com.doomedforfailure.todolist.db;
+package com.campbellaaron.todolist.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

@@ -1,4 +1,4 @@
-package com.doomedforfailure.todolist;
+package com.campbellaaron.todolist;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,9 +17,6 @@ import android.widget.ListView;
 import com.google.gson.Gson;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -140,58 +137,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readNotes(File taskFile) {
-        File[] filesDir = this.getFilesDir().listFiles();
-        for (File file : filesDir) {
-            FileInputStream inputStream = null;
-            String title = file.getName();
-            if (!title.startsWith("##")) {
-                continue;
-            }
-            else {
-                title = title.substring(2,title.length());
-            }
-            String text = "";
-            try {
-                inputStream = openFileInput(taskFile.getName());
-                byte[] input = new byte[inputStream.available()];
-                while (inputStream.read(input) != -1) {
-                }
-                text = new String(input);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-            finally {
-                Task[] taskItem = gson.fromJson(text, Task[].class);
 
-                try {
-                    inputStream.close();
-                } catch (IOException ie) {
-                    ie.printStackTrace();
-                }
-                catch (NullPointerException ie) {
-                    ie.printStackTrace();
-                }
-            }
-        }
     }
 
     private void writeNotes(Task task) {
-        FileOutputStream outputStream = null;
-        filename = "##" + task.getTitle();
-        try {
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            String json = gson.toJson(taskArrayList);
-            byte[] bytes = json.getBytes();
-            outputStream.write(bytes);
-            outputStream.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                outputStream.close();
-            } catch (Exception ignored) {}
-        }
+
     }
 
     @Override

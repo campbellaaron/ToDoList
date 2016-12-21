@@ -1,4 +1,4 @@
-package com.doomedforfailure.todolist;
+package com.campbellaaron.todolist;
 
 import org.junit.Test;
 
