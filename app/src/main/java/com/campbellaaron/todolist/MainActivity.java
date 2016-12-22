@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Task task = taskArrayList.get(position);
-
                 Intent intent = new Intent(MainActivity.this, AddEditTask.class);
                 intent.putExtra("Title", task.getTitle());
                 intent.putExtra("Time", task.getDueTime());
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("DueDate", task.getFormattedDate());
                 intent.putExtra("Category", task.getCategory());
                 intent.putExtra("Index", position);
-                toDoArrayAdapter.updateAdapter(taskArrayList);
+                toDoArrayAdapter.remove(taskArrayList.get(position));
                 toDoArrayAdapter.notifyDataSetChanged();
                 startActivityForResult(intent, 1);
 
@@ -81,10 +80,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Task task = taskArrayList.get(position);
-                        deleteFile("##" + task.getTitle());
                         taskArrayList.remove(task);
-                        toDoArrayAdapter.updateAdapter(taskArrayList);
                         toDoArrayAdapter.notifyDataSetChanged();
+                        writeNotes(task);
                     }
 
                 });
