@@ -17,7 +17,10 @@ import android.widget.ListView;
 import com.google.gson.Gson;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("DueDate", task.getFormattedDate());
                 intent.putExtra("Category", task.getCategory());
                 intent.putExtra("Index", position);
-
+                toDoArrayAdapter.updateAdapter(taskArrayList);
+                toDoArrayAdapter.notifyDataSetChanged();
                 startActivityForResult(intent, 1);
 
             }
@@ -105,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 taskArrayList.set(index, task);
             }
 
-            Collections.sort(taskArrayList);
             toDoArrayAdapter.updateAdapter(taskArrayList);
 
         }
@@ -137,11 +140,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readNotes(File taskFile) {
-
+        FileInputStream inputStream = null;
+        String todosText = "";
+        try {
+            inputStream = openFileInput(taskFile.getName());
+            byte[] input = new byte[inputStream.available()];
+            while (inputStream.read(input) != -1) {
+            }
+            todosText = new String(input);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            Task[] todoList = gson.fromJson(todosText, Task[].class);
+            tasks = Arrays.asList(todoList);
+        }
     }
 
     private void writeNotes(Task task) {
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
 
+            String json = gson.toJson(taskArrayList);
+            byte[] bytes = json.getBytes();
+            outputStream.write(bytes);
+            outputStream.flush();
+            toDoArrayAdapter.updateAdapter(taskArrayList);
+            toDoArrayAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                outputStream.close();
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     @Override

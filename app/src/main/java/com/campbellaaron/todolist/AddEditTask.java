@@ -48,6 +48,7 @@ public class AddEditTask extends AppCompatActivity {
     private TextView dueDate;
     private TextView categoryText;
     protected Spinner spinner;
+    TaskArrayAdapter adapter;
     private int index;
     private String item;
     private Calendar calendar;
@@ -130,14 +131,16 @@ public class AddEditTask extends AppCompatActivity {
 
         index = intent.getIntExtra("Index", -1);
 
+
         String title = intent.getStringExtra("Title");
         String text = intent.getStringExtra("Text");
         String time = intent.getStringExtra("Time");
-        String category = intent.getStringExtra("Category");
+        String date = intent.getStringExtra("Date");
         editTitle.setText(title);
         editTask.setText(text);
-        categoryText.setText(category);
         dueTime.setText(time);
+        dueDate.setText(date);
+
     }
 
     public void showDatePicker(View v) {

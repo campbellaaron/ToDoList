@@ -1,11 +1,22 @@
 package com.campbellaaron.todolist;
 
+import java.util.Date;
+
 /**
  * Created by aaroncampbell on 12/14/16.
  */
 
 public class Category implements Comparable<Category> {
     private String name;
+    private Date modifiedDate;
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
 
     public String getName() {
         return name;
@@ -17,7 +28,7 @@ public class Category implements Comparable<Category> {
 
     @Override
     public int compareTo(Category category) {
-        return category.getName().compareTo(getName());
+        return category.getModifiedDate().compareTo(getModifiedDate());
     }
 }
 
