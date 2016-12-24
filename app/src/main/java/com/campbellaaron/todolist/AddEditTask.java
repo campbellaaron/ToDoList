@@ -2,6 +2,7 @@ package com.campbellaaron.todolist;
 
 import android.Manifest;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -54,6 +56,8 @@ public class AddEditTask extends AppCompatActivity {
     private Calendar calendar;
     private SimpleDateFormat dateFormatter;
     public Bundle savedInstanceState;
+    private Button addCatBtn;
+    private EditText addCatText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,19 +72,32 @@ public class AddEditTask extends AppCompatActivity {
         categoryText = (TextView) findViewById(R.id.category_text);
         dueDate = (TextView) findViewById(R.id.pick_date);
         dueTime = (TextView) findViewById(R.id.post_time);
+        addCatText = (EditText) findViewById(R.id.add_category);
+        addCatBtn = (Button) findViewById(R.id.category_btn);
 
         final List<String> categories = new ArrayList<>();
-        categories.add("Personal");
-        categories.add("Work");
-        categories.add("Shopping");
-        categories.add("Projects");
-        categories.add("Travel");
+//        categories.add("Personal");
+//        categories.add("Work");
+//        categories.add("Shopping");
+//        categories.add("Projects");
+//        categories.add("Travel");
 
         //Create adapter for Spinner object
         ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+        addCatBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String inputCategory = addCatText.getText().toString();
+                categories.add(inputCategory);
+                addCatText.setText("");
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(addCatText.getWindowToken(), 0);
+            }
+        });
 
         //Drop down layout-style
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setPrompt("Select a Category...");
         spinner.setAdapter(catAdapter);
 
         //Spinner element
@@ -136,6 +153,7 @@ public class AddEditTask extends AppCompatActivity {
         String text = intent.getStringExtra("Text");
         String time = intent.getStringExtra("Time");
         String date = intent.getStringExtra("Date");
+
         editTitle.setText(title);
         editTask.setText(text);
         dueTime.setText(time);
@@ -195,6 +213,7 @@ public class AddEditTask extends AppCompatActivity {
             taskImage = (ImageView) findViewById(imageView);
             Bitmap bitImage = BitmapFactory.decodeFile(picturePath);
             taskImage.setImageBitmap(bitImage);
+
         }
     }
 }
