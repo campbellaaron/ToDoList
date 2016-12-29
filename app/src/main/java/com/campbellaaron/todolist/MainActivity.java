@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("Title", task.getTitle());
                 intent.putExtra("Time", task.getDueTime());
                 intent.putExtra("Text", task.getTaskText());
-                intent.putExtra("DueDate", task.getFormattedDate());
+                intent.putExtra("Date", task.getFormattedDate());
                 intent.putExtra("Category", task.getCategory());
                 intent.putExtra("Index", position);
                 toDoArrayAdapter.remove(taskArrayList.get(position));
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                         Task task = taskArrayList.get(position);
                         taskArrayList.remove(task);
                         toDoArrayAdapter.notifyDataSetChanged();
-                        writeNotes(task);
+                        writeNotes();
                     }
 
                 });
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             int index = data.getIntExtra("Index", -1);
             Task task = new Task(data.getStringExtra("Title"),
-                    data.getStringExtra("Text"), DatePickerFragment.formattedDate, data.getStringExtra("Category"), data.getStringExtra("Time"));
+                    data.getStringExtra("Text"), DatePickerFragment.formattedDate, data.getStringExtra("Category"), data.getStringExtra("Time"), "Image");
 
             if (index == -1) {
                 taskArrayList.add(task);
@@ -115,25 +115,17 @@ public class MainActivity extends AppCompatActivity {
     private void setupNotes() {
         Log.d(TAG, "Made it to setup");
         taskArrayList = new ArrayList<>();
-        if (notesPrefs.getBoolean("firstRun", true)) {
-            SharedPreferences.Editor editor = notesPrefs.edit();
-            editor.putBoolean("firstRun", false);
-            editor.apply();
 
-            Task task1 = new Task("Title", "Text", DatePickerFragment.formattedDate, "Category", "Time");
-            taskArrayList.add(task1);
+        File filesDir = this.getFilesDir();
+        File taskFile = new File(filesDir + File.separator + filename);
+        if (taskFile.exists()) {
+            readNotes(taskFile);
 
             for (Task task : tasks) {
-                writeNotes(task);
+                taskArrayList.add(task);
             }
-        }
-         else {
-            File filesDir = this.getFilesDir();
-            File taskFile = new File(filesDir + File.separator + filename);
-            if (taskFile.exists()) {
-                readNotes(taskFile);
-
-            }
+        } else {
+            writeNotes();
         }
     }
 
@@ -154,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void writeNotes(Task task) {
+    private void writeNotes() {
         FileOutputStream outputStream = null;
         try {
             outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
@@ -162,9 +154,8 @@ public class MainActivity extends AppCompatActivity {
             String json = gson.toJson(taskArrayList);
             byte[] bytes = json.getBytes();
             outputStream.write(bytes);
+
             outputStream.flush();
-            toDoArrayAdapter.updateAdapter(taskArrayList);
-            toDoArrayAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

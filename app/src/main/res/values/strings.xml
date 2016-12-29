@@ -7,5 +7,6 @@
     <string name="dateModified">Modified Date</string>
     <string name="pick_date">Due Date</string>
     <string name="image_error">Error retrieving image</string>
+    <string name="blank_field">You cannot leave the field blank!</string>
 
 </resources>

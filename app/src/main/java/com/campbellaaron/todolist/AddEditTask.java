@@ -3,6 +3,7 @@ package com.campbellaaron.todolist;
 import android.Manifest;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -45,59 +48,48 @@ public class AddEditTask extends AppCompatActivity {
     private EditText editTitle;
     private EditText editTask;
     private ImageView taskImage;
+    private CheckBox isComplete;
     private Button imgBtn;
     private TextView dueTime;
     private TextView dueDate;
     private TextView categoryText;
     protected Spinner spinner;
-    TaskArrayAdapter adapter;
     private int index;
     private String item;
     private Calendar calendar;
     private SimpleDateFormat dateFormatter;
     public Bundle savedInstanceState;
-    private Button addCatBtn;
     private EditText addCatText;
+    private Button addCatBtn;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.todo_layout);
         this.savedInstanceState = savedInstanceState;
+        final Intent intent = getIntent();
 
         imgBtn = (Button) findViewById(R.id.image_btn);
         editTitle = (EditText) findViewById(R.id.task_title);
         editTask = (EditText) findViewById(R.id.task_text);
         spinner = (Spinner) findViewById(R.id.select_category);
-        categoryText = (TextView) findViewById(R.id.category_text);
         dueDate = (TextView) findViewById(R.id.pick_date);
         dueTime = (TextView) findViewById(R.id.post_time);
         addCatText = (EditText) findViewById(R.id.add_category);
-        addCatBtn = (Button) findViewById(R.id.category_btn);
+        addCatBtn = (Button) findViewById(R.id.catBtn);
+        isComplete = (CheckBox) findViewById(R.id.checkBox);
 
         final List<String> categories = new ArrayList<>();
-//        categories.add("Personal");
-//        categories.add("Work");
-//        categories.add("Shopping");
-//        categories.add("Projects");
-//        categories.add("Travel");
+        categories.add("Personal");
+        categories.add("Work");
+        categories.add("Shopping");
+        categories.add("Add New...");
 
         //Create adapter for Spinner object
         ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
-        addCatBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String inputCategory = addCatText.getText().toString();
-                categories.add(inputCategory);
-                addCatText.setText("");
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(addCatText.getWindowToken(), 0);
-            }
-        });
 
         //Drop down layout-style
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setPrompt("Select a Category...");
         spinner.setAdapter(catAdapter);
 
         //Spinner element
@@ -105,10 +97,34 @@ public class AddEditTask extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 // On selecting a spinner item
-                item = spinner.getItemAtPosition(i).toString();
+                if (spinner.getSelectedItem().toString().equals("Add New...")) {
+                    addCatText.setVisibility(View.VISIBLE);
+                    addCatBtn.setVisibility(View.VISIBLE);
+                    addCatBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            try {
+                                if (addCatText.getText().toString() == null) {
+                                    Toast.makeText(AddEditTask.this, "You must cannot leave this blank!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    categories.add(0, addCatText.getText().toString());
+                                    addCatText.setText("");
+                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                    imm.hideSoftInputFromWindow(addCatText.getWindowToken(), 0);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    item = spinner.getItemAtPosition(i).toString();
+                    addCatText.setVisibility(View.INVISIBLE);
+                    addCatBtn.setVisibility(View.INVISIBLE);
 
-                // Showing selected spinner item
-                Toast.makeText(adapterView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                    // Showing selected spinner item
+                    Toast.makeText(adapterView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
@@ -117,6 +133,10 @@ public class AddEditTask extends AppCompatActivity {
             }
         });
 
+        editTitle.setText(intent.getStringExtra("Title"));
+        editTask.setText(intent.getStringExtra("Text"));
+        dueDate.setText(intent.getStringExtra("DueDate"));
+        dueTime.setText(intent.getStringExtra("DueTime"));
         calendar = Calendar.getInstance();
         dateFormatter = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
 
@@ -144,8 +164,6 @@ public class AddEditTask extends AppCompatActivity {
 
         dueDate.setText(dateFormatter.format(calendar.getTime()));
 
-        final Intent intent = getIntent();
-
         index = intent.getIntExtra("Index", -1);
 
 
@@ -153,12 +171,16 @@ public class AddEditTask extends AppCompatActivity {
         String text = intent.getStringExtra("Text");
         String time = intent.getStringExtra("Time");
         String date = intent.getStringExtra("Date");
+        String category = intent.getStringExtra("Category");
+        if (category != null) {
+            int spinnerPosition = catAdapter.getPosition(category);
+            spinner.setSelection(spinnerPosition);
+        }
 
         editTitle.setText(title);
         editTask.setText(text);
         dueTime.setText(time);
         dueDate.setText(date);
-
     }
 
     public void showDatePicker(View v) {
@@ -173,12 +195,33 @@ public class AddEditTask extends AppCompatActivity {
 
     public void saveClicked(View v) {
         Intent intent = getIntent();
+        AlertDialog alert = new AlertDialog.Builder(AddEditTask.this).create();
         intent.putExtra("Title", editTitle.getText().toString());
         intent.putExtra("Text", editTask.getText().toString());
-        intent.putExtra("Time", dueTime.getText().toString());
-        intent.putExtra("DueDate", dueDate.getText().toString());
-        intent.putExtra("Category", item.toString());
+        intent.putExtra("Complete", isComplete.isChecked());
+        if (dueTime.getText().toString().equals("") || dueDate.getText().toString().equals("")) {
+            alert.setTitle("ERROR!");
+            alert.setMessage("You must select a Due Date or Time!");
+            alert.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alert.show();
+        } else {
+            intent.putExtra("DueDate", dueDate.getText().toString());
+            intent.putExtra("Time", dueTime.getText().toString());
+        }
+        try {
+            if (spinner.getSelectedItem().toString().equals("Add New...")){
 
+            } else {
+                intent.putExtra("Category", item.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         intent.putExtra("Index", index);
         setResult(RESULT_OK, intent);
         Log.d(TAG, "Added a Task");

@@ -26,7 +26,9 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.android.support:design:25.0.1'
-    compile 'com.google.firebase:firebase-database:9.0.2'
+    compile 'com.google.firebase:firebase-database:9.4.0'
+    compile 'com.google.firebase:firebase-auth:10.0.1'
+    compile 'com.google.firebase:firebase-storage:10.0.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.davidstemmer.screenplay:screenplay:1.0.2'
     compile 'com.davidstemmer.screenplay:flow-plugin:0.12'

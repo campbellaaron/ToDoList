@@ -26,7 +26,7 @@ public class Task implements Comparable<Task> {
     @SerializedName("key")
     private String key;
 
-    public Task(String title, String taskText, String formattedDate, String category, String dueTime) {
+    public Task(String title, String taskText, String formattedDate, String category, String dueTime, String imgSrc) {
         this.title = title;
         this.taskText = taskText;
         this.dateModified = dateModified;
@@ -35,6 +35,10 @@ public class Task implements Comparable<Task> {
         this.dueTime = dueTime;
         this.imgSrc = imgSrc;
         this.key = key;
+    }
+
+    public Task(String category) {
+        this.category = category;
     }
 
     public String getTitle() {
