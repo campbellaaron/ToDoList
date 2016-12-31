@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,18 +23,21 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Menu menu;
     private TaskArrayAdapter toDoArrayAdapter;
-    private ArrayList<Task> taskArrayList = new ArrayList<Task>();
+    public static ArrayList<Task> taskArrayList = new ArrayList<Task>();
+    private ArrayList<Task> results = new ArrayList<>();
     List <Task> tasks = new ArrayList<>();
     private SharedPreferences notesPrefs;
-    private ListView taskListView;
+    public ListView taskListView;
     private Gson gson = new Gson();
     String filename = "TaskList";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("Index", position);
                 toDoArrayAdapter.remove(taskArrayList.get(position));
                 toDoArrayAdapter.notifyDataSetChanged();
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, position);
 
             }
         });
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
     }
 
     @Override
@@ -98,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             int index = data.getIntExtra("Index", -1);
             Task task = new Task(data.getStringExtra("Title"),
-                    data.getStringExtra("Text"), DatePickerFragment.formattedDate, data.getStringExtra("Category"), data.getStringExtra("Time"), "Image");
+                    data.getStringExtra("Text"), DatePickerFragment.formattedDate, data.getStringExtra("Category"), data.getStringExtra("Time"), new Date());
 
             if (index == -1) {
                 taskArrayList.add(task);
@@ -179,10 +184,24 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_add_task:
                 Log.d(TAG, "Add a new Task");
                 Intent intent = new Intent(MainActivity.this, AddEditTask.class);
-                intent.putExtra("Title", "");
-                intent.putExtra("Text", "");
-                intent.putExtra("Category", "");
                 startActivityForResult(intent, 1);
+                return true;
+            case R.id.menuSearch:
+                SearchView searchView = (SearchView)item.getActionView();
+
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        toDoArrayAdapter.getFilter().filter(newText);
+
+                        return true;
+                    }
+                });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

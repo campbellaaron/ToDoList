@@ -44,7 +44,7 @@ import static com.campbellaaron.todolist.R.id.imageView;
 
 public class AddEditTask extends AppCompatActivity {
     private static final int SELECTED_PICTURE = 1;
-    private static final String TAG = "ToDoList";
+    private static final String TAG = "~ToDoList~";
     private EditText editTitle;
     private EditText editTask;
     private ImageView taskImage;
@@ -52,7 +52,6 @@ public class AddEditTask extends AppCompatActivity {
     private Button imgBtn;
     private TextView dueTime;
     private TextView dueDate;
-    private TextView categoryText;
     protected Spinner spinner;
     private int index;
     private String item;
@@ -61,6 +60,7 @@ public class AddEditTask extends AppCompatActivity {
     public Bundle savedInstanceState;
     private EditText addCatText;
     private Button addCatBtn;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,6 +111,8 @@ public class AddEditTask extends AppCompatActivity {
                                     addCatText.setText("");
                                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                     imm.hideSoftInputFromWindow(addCatText.getWindowToken(), 0);
+                                    addCatBtn.setVisibility(View.INVISIBLE);
+                                    addCatText.setVisibility(View.INVISIBLE);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -132,6 +134,7 @@ public class AddEditTask extends AppCompatActivity {
 
             }
         });
+        index = intent.getIntExtra("Index", -1);
 
         editTitle.setText(intent.getStringExtra("Title"));
         editTask.setText(intent.getStringExtra("Text"));
@@ -163,8 +166,6 @@ public class AddEditTask extends AppCompatActivity {
         }
 
         dueDate.setText(dateFormatter.format(calendar.getTime()));
-
-        index = intent.getIntExtra("Index", -1);
 
 
         String title = intent.getStringExtra("Title");
@@ -213,15 +214,7 @@ public class AddEditTask extends AppCompatActivity {
             intent.putExtra("DueDate", dueDate.getText().toString());
             intent.putExtra("Time", dueTime.getText().toString());
         }
-        try {
-            if (spinner.getSelectedItem().toString().equals("Add New...")){
-
-            } else {
-                intent.putExtra("Category", item.toString());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        intent.putExtra("Category", item.toString());
         intent.putExtra("Index", index);
         setResult(RESULT_OK, intent);
         Log.d(TAG, "Added a Task");

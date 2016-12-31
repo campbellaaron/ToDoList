@@ -21,12 +21,14 @@ public class Task implements Comparable<Task> {
     private String category;
     @SerializedName("dueTime")
     private String dueTime;
+    @SerializedName("Complete")
+    private Boolean complete;
     @SerializedName("imgSrc")
     private String imgSrc;
     @SerializedName("key")
     private String key;
 
-    public Task(String title, String taskText, String formattedDate, String category, String dueTime, String imgSrc) {
+    public Task(String title, String taskText, String formattedDate, String category, String dueTime, Date dateModified) {
         this.title = title;
         this.taskText = taskText;
         this.dateModified = dateModified;
@@ -107,6 +109,6 @@ public class Task implements Comparable<Task> {
 
     @Override
     public int compareTo(Task another) {
-        return getFormattedDate().compareTo(another.getFormattedDate());
+        return getDateModified().compareTo(another.getDateModified());
     }
 }
