@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(taskArrayList);
 
         taskListView = (ListView) findViewById(R.id.listView);
+        taskListView.setTextFilterEnabled(true);
         toDoArrayAdapter = new TaskArrayAdapter(this, R.layout.task_todo, taskArrayList);
         taskListView.setAdapter(toDoArrayAdapter);
         taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("Text", task.getTaskText());
                 intent.putExtra("Date", task.getFormattedDate());
                 intent.putExtra("Category", task.getCategory());
+                intent.putExtra("ImageSrc", task.getImgSrc());
                 intent.putExtra("Index", position);
                 toDoArrayAdapter.remove(taskArrayList.get(position));
                 toDoArrayAdapter.notifyDataSetChanged();

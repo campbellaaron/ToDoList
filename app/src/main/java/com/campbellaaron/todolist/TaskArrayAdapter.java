@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -39,15 +41,34 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         TextView noteTime = (TextView)view.findViewById(R.id.task_time);
         TextView dueDate = (TextView)view.findViewById(R.id.view_date);
         TextView category = (TextView)view.findViewById(R.id.category_text);
+        ImageView imageView = (ImageView) view.findViewById(R.id.task_image);
+        CheckBox isComplete = (CheckBox) view.findViewById(R.id.taskComplete);
 
-        Task task = tasks.get(position);
+        final Task task = tasks.get(position);
 
         noteTitle.setText(task.getTitle());
         noteText.setText(task.getTaskText());
         dueDate.setText(task.getFormattedDate());
         noteTime.setText(task.getDueTime());
         category.setText(task.getCategory());
-
+        if (task.getImage() != null) {
+            imageView.setImageBitmap(task.getImage());
+        }
+        if (task.getComplete() != null) {
+            isComplete.setChecked(task.getComplete());
+        } else {
+            isComplete.setVisibility(View.INVISIBLE);
+        }
+        isComplete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (((CheckBox) view).isChecked()){
+                    task.setComplete(true);
+                } else {
+                    task.setComplete(false);
+                }
+            }
+        });
         return view;
     }
 

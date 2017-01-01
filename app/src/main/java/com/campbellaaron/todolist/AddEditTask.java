@@ -3,7 +3,6 @@ package com.campbellaaron.todolist;
 import android.Manifest;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -15,7 +14,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -138,8 +136,8 @@ public class AddEditTask extends AppCompatActivity {
 
         editTitle.setText(intent.getStringExtra("Title"));
         editTask.setText(intent.getStringExtra("Text"));
-        dueDate.setText(intent.getStringExtra("DueDate"));
-        dueTime.setText(intent.getStringExtra("DueTime"));
+        dueDate.setText(intent.getStringExtra("Date"));
+        dueTime.setText(intent.getStringExtra("Time"));
         calendar = Calendar.getInstance();
         dateFormatter = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
 
@@ -175,8 +173,9 @@ public class AddEditTask extends AppCompatActivity {
         String category = intent.getStringExtra("Category");
         if (category != null) {
             int spinnerPosition = catAdapter.getPosition(category);
-            spinner.setSelection(spinnerPosition);
+
         }
+
 
         editTitle.setText(title);
         editTask.setText(text);
@@ -196,25 +195,12 @@ public class AddEditTask extends AppCompatActivity {
 
     public void saveClicked(View v) {
         Intent intent = getIntent();
-        AlertDialog alert = new AlertDialog.Builder(AddEditTask.this).create();
         intent.putExtra("Title", editTitle.getText().toString());
         intent.putExtra("Text", editTask.getText().toString());
         intent.putExtra("Complete", isComplete.isChecked());
-        if (dueTime.getText().toString().equals("") || dueDate.getText().toString().equals("")) {
-            alert.setTitle("ERROR!");
-            alert.setMessage("You must select a Due Date or Time!");
-            alert.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            alert.show();
-        } else {
-            intent.putExtra("DueDate", dueDate.getText().toString());
-            intent.putExtra("Time", dueTime.getText().toString());
-        }
         intent.putExtra("Category", item.toString());
+        intent.putExtra("Date", dueDate.getText().toString());
+        intent.putExtra("Time", dueTime.getText().toString());
         intent.putExtra("Index", index);
         setResult(RESULT_OK, intent);
         Log.d(TAG, "Added a Task");
@@ -245,10 +231,13 @@ public class AddEditTask extends AppCompatActivity {
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
+            Task task = new Task();
 
             taskImage = (ImageView) findViewById(imageView);
             Bitmap bitImage = BitmapFactory.decodeFile(picturePath);
             taskImage.setImageBitmap(bitImage);
+            task.setImage(bitImage);
+            Log.d(TAG, picturePath);
 
         }
     }

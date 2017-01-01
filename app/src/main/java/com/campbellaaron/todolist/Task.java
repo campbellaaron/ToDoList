@@ -1,5 +1,7 @@
 package com.campbellaaron.todolist;
 
+import android.graphics.Bitmap;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
@@ -25,6 +27,8 @@ public class Task implements Comparable<Task> {
     private Boolean complete;
     @SerializedName("imgSrc")
     private String imgSrc;
+    @SerializedName("image")
+    private Bitmap image;
     @SerializedName("key")
     private String key;
 
@@ -39,8 +43,19 @@ public class Task implements Comparable<Task> {
         this.key = key;
     }
 
-    public Task(String category) {
-        this.category = category;
+    public Task() {
+    }
+
+    public Task(String imgSrc) {
+        this.imgSrc = imgSrc;
+    }
+
+    public Task(Bitmap image){
+        this.image = image;
+    }
+
+    public Task(Boolean complete) {
+        this.complete = complete;
     }
 
     public String getTitle() {
@@ -105,6 +120,22 @@ public class Task implements Comparable<Task> {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Boolean getComplete() {
+        return complete;
+    }
+
+    public void setComplete(Boolean complete) {
+        this.complete = complete;
+    }
+
+    public Bitmap getImage() {
+        return image;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 
     @Override
