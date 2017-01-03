@@ -1,11 +1,13 @@
 package com.campbellaaron.todolist;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -58,15 +60,18 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         }
         modifiedDate.setText("Modified: " + formatter.format(task.getDateModified()));
 
-        isComplete.setOnClickListener(new View.OnClickListener() {
+        isComplete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                if (((CheckBox) view).isChecked()){
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
                     task.setComplete(true);
                 } else {
                     task.setComplete(false);
                 }
+                Log.d(task.getTitle().toString(), task.getComplete().toString());
+
             }
+
         });
         return view;
     }

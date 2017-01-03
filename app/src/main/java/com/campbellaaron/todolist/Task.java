@@ -43,15 +43,15 @@ public class Task implements Comparable<Task> {
         this.key = key;
     }
 
-    public Task(String string, String cursorString, String s, String string1, String cursorString1, String s1, String string2, String cursorString2, String s2) {
-    }
-
-    public Task(String imgSrc) {
-        this.imgSrc = imgSrc;
-    }
-
-    public Task(Bitmap image){
+    public Task(String title, String taskText, String formattedDate, String category, String dueTime, Date dateModified, Bitmap image) {
+        this.title = title;
+        this.taskText = taskText;
+        this.dateModified = dateModified;
+        this.formattedDate = formattedDate;
+        this.category = category;
+        this.dueTime = dueTime;
         this.image = image;
+        this.key = key;
     }
 
     public Task(Boolean complete) {

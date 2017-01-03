@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private Boolean searchOn;
     private SearchManager searchManager;
     public ListView taskListView;
+    private ToggleButton toggleButton;
     private Gson gson = new Gson();
     public static boolean tasksCompleted = true;
     String filename = "TaskList";
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(taskArrayList);
 
         taskListView = (ListView) findViewById(R.id.listView);
+        toggleButton = (ToggleButton) findViewById(R.id.toggleIt);
         taskListView.setTextFilterEnabled(true);
         toDoArrayAdapter = new TaskArrayAdapter(this, R.layout.task_todo, taskArrayList);
         taskListView.setAdapter(toDoArrayAdapter);
@@ -108,23 +112,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        toggleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Task task = new Task();
+                if (tasksCompleted) {
+                    tasksCompleted = false;
+                    ArrayList<Task> completed = new ArrayList<>();
+
+                    toDoArrayAdapter = new TaskArrayAdapter(MainActivity.this, R.layout.task_todo, completed);
+                    taskListView.setAdapter(toDoArrayAdapter);
+                    toDoArrayAdapter.updateAdapter(completed);
+                    toDoArrayAdapter.notifyDataSetChanged();
+                } else {
+                    tasksCompleted = true;
+                    toDoArrayAdapter = new TaskArrayAdapter(MainActivity.this, R.layout.task_todo, taskArrayList);
+                    taskListView.setAdapter(toDoArrayAdapter);
+                    toDoArrayAdapter.updateAdapter(taskArrayList);
+                    toDoArrayAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
     }
 
     @Override
+    @Nullable
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        getIntent();
         if (resultCode == RESULT_OK) {
-            int index = data.getIntExtra("Index", -1);
             Task task = new Task(data.getStringExtra("Title"),
                     data.getStringExtra("Text"), DatePickerFragment.formattedDate, data.getStringExtra("Category"), data.getStringExtra("Time"), new Date());
 
-            if (index == -1) {
-                taskArrayList.add(taskArrayList.size(), task);
-                writeNotes();
-            }
-            else {
-                taskArrayList.set(index, task);
-            }
+            taskArrayList.add(taskArrayList.size(), task);
+            writeNotes();
+//
             Collections.sort(taskArrayList);
             toDoArrayAdapter.updateAdapter(taskArrayList);
 
@@ -284,11 +307,10 @@ public class MainActivity extends AppCompatActivity {
                 ComponentName componentName = new ComponentName(getApplicationContext(), MainActivity.class);
                 searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
                 break;
-            case R.id.toggleIt:
-                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
+
 }

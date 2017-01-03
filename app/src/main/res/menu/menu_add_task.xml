@@ -17,8 +17,4 @@
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always"/>
 
-    <item android:id="@+id/toggleIt"
-        android:title="@string/toggle"
-        app:showAsAction="ifRoom"/>
-
 </menu>

@@ -11,5 +11,7 @@
     <string name="search">Search</string>
     <string name="toggle">Toggle</string>
     <string name="modified_date">MM/dd/yyyy HH:mm a zz</string>
+    <string name="textOff">Completed Items</string>
+    <string name="textOn">All Items</string>
 
 </resources>

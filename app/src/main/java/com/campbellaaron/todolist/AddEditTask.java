@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -66,6 +67,7 @@ public class AddEditTask extends AppCompatActivity {
         setContentView(R.layout.todo_layout);
         this.savedInstanceState = savedInstanceState;
         final Intent intent = getIntent();
+        final SharedPreferences.Editor editor = getPreferences(0).edit();
 
         imgBtn = (Button) findViewById(R.id.image_btn);
         editTitle = (EditText) findViewById(R.id.task_title);
@@ -84,7 +86,7 @@ public class AddEditTask extends AppCompatActivity {
         categories.add("Add New...");
 
         //Create adapter for Spinner object
-        ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+        final ArrayAdapter<String> catAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
 
         //Drop down layout-style
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -105,12 +107,15 @@ public class AddEditTask extends AppCompatActivity {
                                 if (addCatText.getText().toString() == null) {
                                     Toast.makeText(AddEditTask.this, "You must cannot leave this blank!", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    categories.set(0, addCatText.getText().toString());
+                                    categories.add(0, addCatText.getText().toString());
                                     addCatText.setText("");
+                                    catAdapter.notifyDataSetChanged();
                                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                     imm.hideSoftInputFromWindow(addCatText.getWindowToken(), 0);
                                     addCatBtn.setVisibility(View.INVISIBLE);
                                     addCatText.setVisibility(View.INVISIBLE);
+                                    editor.putString("spinnerSelection", addCatText.getText().toString());
+                                    editor.commit();
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -165,7 +170,6 @@ public class AddEditTask extends AppCompatActivity {
 
         dueDate.setText(dateFormatter.format(calendar.getTime()));
 
-        Task task = new Task();
         String title = intent.getStringExtra("Title");
         String text = intent.getStringExtra("Text");
         String time = intent.getStringExtra("Time");
@@ -239,7 +243,9 @@ public class AddEditTask extends AppCompatActivity {
             taskImage.setImageBitmap(bitImage);
             task.setImage(bitImage);
             Log.d(TAG, task.getImage().toString());
-            
+
+            Intent i = new Intent(this, MainActivity.class);
+            i.putExtra("Bitmap", bitImage);
         }
     }
 }
