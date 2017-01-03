@@ -1,5 +1,7 @@
 package com.campbellaaron.todolist;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,8 +37,11 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Task> results = new ArrayList<>();
     List <Task> tasks = new ArrayList<>();
     private SharedPreferences notesPrefs;
+    private Boolean searchOn;
+    private SearchManager searchManager;
     public ListView taskListView;
     private Gson gson = new Gson();
+    public static boolean tasksCompleted = true;
     String filename = "TaskList";
 
 
@@ -46,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setLogo(R.drawable.todolist);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         setContentView(R.layout.activity_main);
+        searchOn = false;
+        searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
 
         notesPrefs = getPreferences(Context.MODE_PRIVATE);
 
@@ -57,24 +66,6 @@ public class MainActivity extends AppCompatActivity {
         taskListView.setTextFilterEnabled(true);
         toDoArrayAdapter = new TaskArrayAdapter(this, R.layout.task_todo, taskArrayList);
         taskListView.setAdapter(toDoArrayAdapter);
-        taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Task task = taskArrayList.get(position);
-                Intent intent = new Intent(MainActivity.this, AddEditTask.class);
-                intent.putExtra("Title", task.getTitle());
-                intent.putExtra("Time", task.getDueTime());
-                intent.putExtra("Text", task.getTaskText());
-                intent.putExtra("Date", task.getFormattedDate());
-                intent.putExtra("Category", task.getCategory());
-                intent.putExtra("ImageSrc", task.getImgSrc());
-                intent.putExtra("Index", position);
-                toDoArrayAdapter.remove(taskArrayList.get(position));
-                toDoArrayAdapter.notifyDataSetChanged();
-                startActivityForResult(intent, position);
-
-            }
-        });
         taskListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -97,6 +88,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Task task = taskArrayList.get(position);
+                if (task.getKey() == null) {
+                    Intent intent = new Intent(MainActivity.this, AddEditTask.class);
+                    intent.putExtra("Title", task.getTitle());
+                    intent.putExtra("Time", task.getDueTime());
+                    intent.putExtra("Text", task.getTaskText());
+                    intent.putExtra("Date", task.getFormattedDate());
+                    intent.putExtra("Category", task.getCategory());
+                    intent.putExtra("Image", task.getImage());
+                    intent.putExtra("Index", position);
+                    toDoArrayAdapter.remove(taskArrayList.get(position));
+                    toDoArrayAdapter.notifyDataSetChanged();
+                    startActivityForResult(intent, 1);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -108,12 +119,13 @@ public class MainActivity extends AppCompatActivity {
                     data.getStringExtra("Text"), DatePickerFragment.formattedDate, data.getStringExtra("Category"), data.getStringExtra("Time"), new Date());
 
             if (index == -1) {
-                taskArrayList.add(task);
+                taskArrayList.add(taskArrayList.size(), task);
+                writeNotes();
             }
             else {
                 taskArrayList.set(index, task);
             }
-
+            Collections.sort(taskArrayList);
             toDoArrayAdapter.updateAdapter(taskArrayList);
 
         }
@@ -189,24 +201,94 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
                 return true;
             case R.id.menuSearch:
-                SearchView searchView = (SearchView)item.getActionView();
+                final SearchView searchView = (SearchView)item.getActionView();
 
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
                     public boolean onQueryTextSubmit(String query) {
-                        return false;
+                        if (TextUtils.isEmpty(searchView.getQuery())) {
+                            taskListView.clearTextFilter();
+
+                            toDoArrayAdapter = new TaskArrayAdapter(MainActivity.this, R.layout.task_todo, taskArrayList);
+                            taskListView.setAdapter(toDoArrayAdapter);
+                            toDoArrayAdapter.updateAdapter(taskArrayList);
+                            toDoArrayAdapter.notifyDataSetChanged();
+                            results = new ArrayList<>();
+                            searchOn = false;
+                        } else {
+                            results = new ArrayList<>();
+                            taskListView = (ListView) findViewById(R.id.listView);
+                            searchOn = true;
+
+                            for (Task task : taskArrayList){
+                                if (task.getTitle().toLowerCase().contains(searchView.getQuery().toString().toLowerCase())) {
+                                    results.add(results.size(), task);
+                                    toDoArrayAdapter = new TaskArrayAdapter(MainActivity.this, R.layout.task_todo, results);
+                                    taskListView.setAdapter(toDoArrayAdapter);
+                                    toDoArrayAdapter.updateAdapter(results);
+                                    toDoArrayAdapter.notifyDataSetChanged();
+                                }
+                            }
+
+                            if (results.size() == 0) {
+                                results.add(0, new Task("No Results", null, null, "No Results", null, null));
+                                toDoArrayAdapter = new TaskArrayAdapter(MainActivity.this, R.layout.task_todo, results);
+                                taskListView.setAdapter(toDoArrayAdapter);
+                                toDoArrayAdapter.updateAdapter(results);
+                                toDoArrayAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        return true;
                     }
 
                     @Override
                     public boolean onQueryTextChange(String newText) {
-                        toDoArrayAdapter.getFilter().filter(newText);
+                        if (TextUtils.isEmpty(searchView.getQuery())) {
+                            taskListView.clearTextFilter();
+
+                            toDoArrayAdapter = new TaskArrayAdapter(MainActivity.this, R.layout.task_todo, taskArrayList);
+                            taskListView.setAdapter(toDoArrayAdapter);
+                            toDoArrayAdapter.updateAdapter(taskArrayList);
+                            toDoArrayAdapter.notifyDataSetChanged();
+                            results = new ArrayList<>();
+                            searchOn = false;
+                        } else {
+                            taskListView.setFilterText(newText.toString());
+                            results = new ArrayList<>();
+                            taskListView = (ListView) findViewById(R.id.listView);
+                            searchOn = true;
+
+                            for (Task task : taskArrayList){
+                                if (task.getTitle().toLowerCase().contains(searchView.getQuery().toString().toLowerCase())) {
+                                    results.add(results.size(), task);
+                                    toDoArrayAdapter = new TaskArrayAdapter(MainActivity.this, R.layout.task_todo, results);
+                                    taskListView.setAdapter(toDoArrayAdapter);
+                                    toDoArrayAdapter.updateAdapter(results);
+                                    toDoArrayAdapter.notifyDataSetChanged();
+                                }
+                            }
+
+                            if (results.size() == 0) {
+                                results.add(0, new Task("No Results", null, null, "No Results", null, null));
+                                toDoArrayAdapter = new TaskArrayAdapter(MainActivity.this, R.layout.task_todo, results);
+                                taskListView.setAdapter(toDoArrayAdapter);
+                                toDoArrayAdapter.updateAdapter(results);
+                                toDoArrayAdapter.notifyDataSetChanged();
+                            }
+                        }
 
                         return true;
                     }
                 });
-                return true;
+                ComponentName componentName = new ComponentName(getApplicationContext(), MainActivity.class);
+                searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
+                break;
+            case R.id.toggleIt:
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 }

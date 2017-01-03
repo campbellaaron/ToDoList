@@ -12,8 +12,13 @@
     <item
         android:id="@+id/menuSearch"
         android:icon="@android:drawable/ic_menu_search"
-        android:title="Search"
+        android:title="@string/search"
+        android:queryHint="@string/search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always"/>
+
+    <item android:id="@+id/toggleIt"
+        android:title="@string/toggle"
+        app:showAsAction="ifRoom"/>
 
 </menu>

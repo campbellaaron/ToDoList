@@ -8,5 +8,8 @@
     <string name="pick_date">Due Date</string>
     <string name="image_error">Error retrieving image</string>
     <string name="blank_field">You cannot leave the field blank!</string>
+    <string name="search">Search</string>
+    <string name="toggle">Toggle</string>
+    <string name="modified_date">MM/dd/yyyy HH:mm a zz</string>
 
 </resources>

@@ -29,7 +29,8 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         this.tasks = objects;
 
         inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        formatter = new SimpleDateFormat("MM/dd/yyyy");
+        formatter = new SimpleDateFormat(context.getString(R.string.modified_date));
+
     }
 
     @Override
@@ -41,6 +42,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         TextView noteTime = (TextView)view.findViewById(R.id.task_time);
         TextView dueDate = (TextView)view.findViewById(R.id.view_date);
         TextView category = (TextView)view.findViewById(R.id.category_text);
+        TextView modifiedDate = (TextView) view.findViewById(R.id.modifiedDate);
         ImageView imageView = (ImageView) view.findViewById(R.id.task_image);
         CheckBox isComplete = (CheckBox) view.findViewById(R.id.taskComplete);
 
@@ -54,11 +56,8 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         if (task.getImage() != null) {
             imageView.setImageBitmap(task.getImage());
         }
-        if (task.getComplete() != null) {
-            isComplete.setChecked(task.getComplete());
-        } else {
-            isComplete.setVisibility(View.INVISIBLE);
-        }
+        modifiedDate.setText("Modified: " + formatter.format(task.getDateModified()));
+
         isComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

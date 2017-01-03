@@ -105,7 +105,7 @@ public class AddEditTask extends AppCompatActivity {
                                 if (addCatText.getText().toString() == null) {
                                     Toast.makeText(AddEditTask.this, "You must cannot leave this blank!", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    categories.add(0, addCatText.getText().toString());
+                                    categories.set(0, addCatText.getText().toString());
                                     addCatText.setText("");
                                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                     imm.hideSoftInputFromWindow(addCatText.getWindowToken(), 0);
@@ -165,7 +165,7 @@ public class AddEditTask extends AppCompatActivity {
 
         dueDate.setText(dateFormatter.format(calendar.getTime()));
 
-
+        Task task = new Task();
         String title = intent.getStringExtra("Title");
         String text = intent.getStringExtra("Text");
         String time = intent.getStringExtra("Time");
@@ -173,14 +173,14 @@ public class AddEditTask extends AppCompatActivity {
         String category = intent.getStringExtra("Category");
         if (category != null) {
             int spinnerPosition = catAdapter.getPosition(category);
-
+            spinner.setSelection(spinnerPosition);
         }
-
 
         editTitle.setText(title);
         editTask.setText(text);
         dueTime.setText(time);
         dueDate.setText(date);
+
     }
 
     public void showDatePicker(View v) {
@@ -201,6 +201,7 @@ public class AddEditTask extends AppCompatActivity {
         intent.putExtra("Category", item.toString());
         intent.putExtra("Date", dueDate.getText().toString());
         intent.putExtra("Time", dueTime.getText().toString());
+
         intent.putExtra("Index", index);
         setResult(RESULT_OK, intent);
         Log.d(TAG, "Added a Task");
@@ -237,8 +238,8 @@ public class AddEditTask extends AppCompatActivity {
             Bitmap bitImage = BitmapFactory.decodeFile(picturePath);
             taskImage.setImageBitmap(bitImage);
             task.setImage(bitImage);
-            Log.d(TAG, picturePath);
-
+            Log.d(TAG, task.getImage().toString());
+            
         }
     }
 }

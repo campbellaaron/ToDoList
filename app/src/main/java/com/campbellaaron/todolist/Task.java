@@ -43,7 +43,7 @@ public class Task implements Comparable<Task> {
         this.key = key;
     }
 
-    public Task() {
+    public Task(String string, String cursorString, String s, String string1, String cursorString1, String s1, String string2, String cursorString2, String s2) {
     }
 
     public Task(String imgSrc) {
@@ -56,6 +56,10 @@ public class Task implements Comparable<Task> {
 
     public Task(Boolean complete) {
         this.complete = complete;
+    }
+
+    public Task() {
+
     }
 
     public String getTitle() {
@@ -140,6 +144,6 @@ public class Task implements Comparable<Task> {
 
     @Override
     public int compareTo(Task another) {
-        return getDateModified().compareTo(another.getDateModified());
+        return another.getDateModified().compareTo(getDateModified());
     }
 }

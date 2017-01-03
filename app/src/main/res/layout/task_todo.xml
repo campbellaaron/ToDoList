@@ -8,15 +8,6 @@ android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceSmall"
-    android:text="@string/pick_date"
-    android:layout_alignParentTop="true"
-    android:layout_alignParentEnd="true"
-    android:id="@+id/view_date" />
-
-    <TextView
         android:text="Category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,14 +51,6 @@ android:layout_width="match_parent"
         android:layout_marginTop="11dp"
         android:focusable="false" />
 
-    <TextView
-        android:text="Time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/task_time"
-        android:layout_below="@+id/category_text"
-        android:layout_alignParentEnd="true" />
-
     <ImageView
         android:layout_height="45dp"
         android:layout_below="@+id/task_time"
@@ -75,5 +58,32 @@ android:layout_width="match_parent"
         android:layout_marginTop="13dp"
         android:id="@+id/task_image"
         android:layout_width="60dp" />
+
+    <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:text="@string/pick_date"
+        android:id="@+id/view_date"
+        android:layout_below="@+id/category_text"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:text="Time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/task_time"
+        android:layout_alignBaseline="@+id/taskComplete"
+        android:layout_alignBottom="@+id/taskComplete"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:text="Modified Date"
+        android:layout_height="wrap_content"
+        android:id="@+id/modifiedDate"
+        android:textSize="9sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content" />
 
 </RelativeLayout>
